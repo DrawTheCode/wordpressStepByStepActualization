@@ -1,0 +1,18 @@
+ARG MYSQL_VERSION=mysql:5.0
+
+FROM ${MYSQL_VERSION}
+
+ARG MYSQL_ROOT_PASSWORD=basic_p455WORD
+ARG MYSQL_DATABASE=initial_database
+ARG MYSQL_USER=simpleUser
+ARG MYSQL_PASSWORD=c0mpl3x_passW046
+ENV MYSQL_ROOT_PASSWORD = ${MYSQL_ROOT_PASSWORD} \
+    MYSQL_DATABASE = ${MYSQL_DATABASE} \
+    MYSQL_USER = ${MYSQL_USER} \
+    MYSQL_PASSWORD = ${MYSQL_PASSWORD}
+
+RUN echo "===================> 🗒️ $MYSQL_VERSION 🗒️ <==================="
+RUN mkdir -p /backups /restore
+COPY ./configs/docker/utils/01-create-database.sh /docker-entrypoint-initdb.d/
+COPY ./configs/docker/utils/02-import-dump.sh /docker-entrypoint-initdb.d/
+COPY ./data/dumps/dump.sql /docker-entrypoint-initdb.d/

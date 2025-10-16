@@ -1,0 +1,106 @@
+services:
+  wordpress:
+    container_name: ${COMPOSE_PROJECT_NAME}-wordpress
+    build:
+      context: .
+      dockerfile: ./configs/docker/dockerFiles/Dockerfile.php
+    volumes:
+      - ./configs/php/php.ini:/usr/local/etc/php/conf.d/uploads.ini
+      - ./src:/var/www/html
+      - ./configs/wordpress/wp-config.php:/var/www/html/wp-config.php
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+  mysql:
+    container_name: ${COMPOSE_PROJECT_NAME}-mysql
+    build:
+      context: .
+      args:
+        MYSQL_VERSION: ${MYSQL_VERSION}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      dockerfile: ./configs/docker/dockerFiles/Dockerfile.mysql
+    environment:
+      MYSQL_VERSION: ${MYSQL_VERSION}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./data/database:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-prootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: ${COMPOSE_PROJECT_NAME}-pma
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8081:80"
+  wpcli:
+    image: wordpress:cli-php${PHP_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}-cli
+    user: "33:33"
+    volumes:
+      - ./src:/var/www/html
+    environment:
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_HOST_PORT: ${WORDPRESS_DB_HOST_PORT}
+    depends_on:
+      - mysql
+    entrypoint: wp
+  ## Importaciones y Respaldos
+  init:
+    image: alpine:3.20
+    depends_on:
+      mysql:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/refresh/refresh.sh"]
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      # ---- Dump watcher (restore) ----
+      DUMP_PATH: /dumps/dump.sql
+      REFRESH_MODE: on-change         # on-change | interval | off
+      REFRESH_INTERVAL_SECONDS: "30" # si REFRESH_MODE=interval
+      # ---- Backups ----
+      BACKUP_ENABLED: "true"          # "true" | "false"
+      BACKUP_MODE: interval           # interval | on-import | manual
+      BACKUP_INTERVAL_SECONDS: "60" # cada 1h si interval
+      BACKUP_DIR: /backups            # carpeta de destino (montada)
+      BACKUP_KEEP: "7"   
+    volumes:
+      - ./data/dumps:/dumps
+      - ./configs/docker/utils:/refresh
+      - ./data/backups:/backups
+    restart: unless-stopped
+
+volumes:
+  wordpress:
+    name: quijote_wp_web_data
+  quijote_init_memory:
+    name: quijote_wp_init
+  wordpress_data:

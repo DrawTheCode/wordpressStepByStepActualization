@@ -1,0 +1,36 @@
+# ========================
+# Entorno local / IDEs
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# ========================
+# Archivos temporales
+# ========================
+*.bak
+*.tmp
+*.old
+*~
+*.orig
+
+# ========================
+# Seguridad
+# ========================
+.env
+.env.*
+!.env.example
+
+# ========================
+# Base de datos y código fuente
+# ========================
+./data/*
+!./data/database/.gitkeep
+!./data/backups/.gitkeep
+./configs/mysql/restore
+!./configs/mysql/restore/.gitkeep
+./src/*
