@@ -88,8 +88,8 @@ services:
       REFRESH_INTERVAL_SECONDS: "30" # si REFRESH_MODE=interval
       # ---- Backups ----
       BACKUP_ENABLED: "true"          # "true" | "false"
-      BACKUP_MODE: interval           # interval | on-import | manual
-      BACKUP_INTERVAL_SECONDS: "60" # cada 1h si interval
+      BACKUP_MODE: manual           # interval | on-import | manual
+      BACKUP_INTERVAL_SECONDS: "3600" # cada 1h si interval
       BACKUP_DIR: /backups            # carpeta de destino (montada)
       BACKUP_KEEP: "7"   
     volumes:
