@@ -6,12 +6,15 @@ ARG MYSQL_ROOT_PASSWORD=basic_p455WORD
 ARG MYSQL_DATABASE=initial_database
 ARG MYSQL_USER=simpleUser
 ARG MYSQL_PASSWORD=c0mpl3x_passW046
-ENV MYSQL_ROOT_PASSWORD = ${MYSQL_ROOT_PASSWORD} \
-    MYSQL_DATABASE = ${MYSQL_DATABASE} \
-    MYSQL_USER = ${MYSQL_USER} \
-    MYSQL_PASSWORD = ${MYSQL_PASSWORD}
+ARG MODE_URL=default
+ENV MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
+    MYSQL_DATABASE=${MYSQL_DATABASE} \
+    MYSQL_USER=${MYSQL_USER} \
+    MYSQL_PASSWORD=${MYSQL_PASSWORD} \
+    MODE_URL=${MODE_URL}
 
 RUN echo "===================> 🗒️ $MYSQL_VERSION 🗒️ <==================="
+RUN echo "================> 🗒️ PATH en WP $MODE_URL 🗒️ <==============="
 RUN mkdir -p /backups /restore
 COPY ./configs/docker/utils/01-create-database.sh /docker-entrypoint-initdb.d/
 COPY ./configs/docker/utils/02-import-dump.sh /docker-entrypoint-initdb.d/

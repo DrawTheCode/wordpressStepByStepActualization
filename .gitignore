@@ -29,8 +29,10 @@ ehthumbs.db
 # Base de datos y código fuente
 # ========================
 ./data/*
-!./data/database/.gitkeep
+./data/database/*
 !./data/backups/.gitkeep
-./configs/mysql/restore
-!./configs/mysql/restore/.gitkeep
+./data/dumps/*
+!./data/dumps/.gitkeep
+./data/restore/*
+!./data/restore/.gitkeep
 ./src/*
