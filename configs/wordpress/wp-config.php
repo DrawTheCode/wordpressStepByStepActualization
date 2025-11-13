@@ -78,6 +78,7 @@ $table_prefix  = 'wp_';
 define('WP_DEBUG', true);
 define('WP_DEBUG_DISPLAY', true);
 @ini_set('display_errors', 0);
+define( 'WP_MEMORY_LIMIT', '256M' );
 
 if (getenv('MODE_URL')) {
   define('WP_HOME',    rtrim(getenv('MODE_URL'), '/'));

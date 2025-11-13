@@ -18,4 +18,4 @@ RUN echo "================> 🗒️ PATH en WP $MODE_URL 🗒️ <==============
 RUN mkdir -p /backups /restore
 COPY ./configs/docker/utils/01-create-database.sh /docker-entrypoint-initdb.d/
 COPY ./configs/docker/utils/02-import-dump.sh /docker-entrypoint-initdb.d/
-COPY ./data/dumps/dump.sql /docker-entrypoint-initdb.d/
+#COPY ./data/dumps/dump.sql /docker-entrypoint-initdb.d/

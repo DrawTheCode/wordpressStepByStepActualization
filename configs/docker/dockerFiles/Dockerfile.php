@@ -1,4 +1,4 @@
-ARG PHP_VERSION=7.2.34
+ARG PHP_VERSION=8.2
 
 FROM php:${PHP_VERSION}-apache
 
@@ -17,21 +17,21 @@ ENV WORDPRESS_DB_NAME = ${MYSQL_DATABASE} \
 RUN docker-php-ext-install mysqli 
 
 ###para php viejo, se debe buscar en librerías legacy de SSL
-RUN sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
-        && sed -i 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list \
-        && echo "Acquire::Check-Valid-Until false;" > /etc/apt/apt.conf.d/99no-check-valid \
-        && apt-get update \
+#RUN sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
+#        && sed -i 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list \
+#        && echo "Acquire::Check-Valid-Until false;" > /etc/apt/apt.conf.d/99no-check-valid \
+#        && apt-get update \
+#        && apt-get install -y --no-install-recommends \
+#             ca-certificates curl unzip \
+#        && update-ca-certificates \
+#        && rm -rf /var/lib/apt/lists/*
+
+##comentar esto si se activa lo de arriba
+RUN apt-get update \
         && apt-get install -y --no-install-recommends \
              ca-certificates curl unzip \
         && update-ca-certificates \
         && rm -rf /var/lib/apt/lists/*
-
-##comentar esto si se activa lo de arriba
-##RUN apt-get update \
-##        && apt-get install -y --no-install-recommends \
-##             ca-certificates curl unzip \
-##        && update-ca-certificates \
-##        && rm -rf /var/lib/apt/lists/*
 
 RUN a2enmod rewrite
 COPY ./configs/php/php.ini /usr/local/etc/php/

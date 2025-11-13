@@ -66,9 +66,6 @@ services:
     image: wordpress:cli-php${PHP_VERSION}
     container_name: ${COMPOSE_PROJECT_NAME}-cli
     user: "33:33"
-    volumes:
-      - ./src:/var/www/html
-      - ./configs/wordpress/wp-config.php:/var/www/html/wp-config.php
     environment:
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
@@ -84,6 +81,7 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    restart: unless-stopped
     entrypoint: ["/bin/sh", "/refresh/refresh.sh"]
     environment:
       DB_HOST: mysql
@@ -107,7 +105,6 @@ services:
       - ./data/restore:/dumps
       - ./configs/docker/utils:/refresh
       - ./data/backups:/backups
-    restart: unless-stopped
 
 volumes:
   wordpress:
